@@ -2,15 +2,17 @@ version: "3"
 services:
   dnsmasq:
     restart: always
-    image: jpillora/dnsmasq:latest
+    image: jpillora/dnsmasq:1.1.0
     ports:
       - 53:53/udp
     volumes:
       - ./dnsmasq/dnsmasq.conf:/etc/dnsmasq.conf:ro
+    networks:
+      - traefik
 
   traefik:
     restart: always
-    image: traefik:latest
+    image: traefik:v2.4.2
     ports:
       - "80:80"
       - "443:443"
@@ -21,14 +23,15 @@ services:
       - ./traefik/dynamic.yml:/dynamic.yml:ro
     depends_on:
       - dnsmasq
+    networks:
+      - traefik
     labels:
       - traefik.enable=true
       - traefik.http.routers.traefik.entrypoints=http,https
-      - traefik.http.routers.traefik.rule=Host(`traefik.this.test`)
+      - traefik.http.routers.traefik.rule=Host(`traefik.chatbot-v2.wogra.test`)
       - traefik.http.routers.traefik.tls=true
       - traefik.http.routers.traefik.service=api@internal
 
 networks:
-  default:
-    external:
-      name: docker
+  traefik:
+    name: traefik
