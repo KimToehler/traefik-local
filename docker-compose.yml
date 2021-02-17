@@ -1,14 +1,5 @@
 version: "3"
 services:
-  dnsmasq:
-    restart: always
-    image: jpillora/dnsmasq:1.1.0
-    ports:
-      - 53:53/udp
-    volumes:
-      - ./dnsmasq/dnsmasq.conf:/etc/dnsmasq.conf:ro
-    networks:
-      - traefik
 
   traefik:
     restart: always
@@ -21,8 +12,6 @@ services:
       - ./certs:/certs:ro
       - ./traefik/traefik.yml:/traefik.yml:ro
       - ./traefik/dynamic.yml:/dynamic.yml:ro
-    depends_on:
-      - dnsmasq
     networks:
       - traefik
     labels:
